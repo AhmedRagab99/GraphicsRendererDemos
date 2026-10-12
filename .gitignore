@@ -17,7 +17,9 @@ _deps/
 
 # IDEs
 .idea/
-.vscode/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
 .cache/
 .vs/
 *.xcodeproj/

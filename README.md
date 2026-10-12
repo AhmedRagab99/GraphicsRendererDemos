@@ -32,6 +32,7 @@ All libraries are git submodules in `lib/`.
 
 - macOS on Apple Silicon, with a recent Xcode (Metal 4 needs a recent macOS SDK and an Apple GPU that supports it)
 - CMake 3.10 or newer
+- The [LunarG Vulkan SDK](https://vulkan.lunarg.com) (or equivalent): the Vulkan loader, MoltenVK and `glslc`
 - A C++23 compiler (Apple Clang)
 
 ## Building
@@ -50,7 +51,8 @@ cmake --build build -j8
 ## Running
 
 ```sh
-./build/GraphicsRendererDemos               # interactive demo window
+./build/GraphicsRendererDemos               # interactive demo window (starts on Metal)
+./build/GraphicsRendererDemos --vulkan      # start on Vulkan instead
 ./build/GraphicsRendererDemos --smoke-test  # headless check that every library works
 ```
 
@@ -59,7 +61,11 @@ cmake --build build -j8
 ```
 CMakeLists.txt     Build configuration for the app and all libraries
 lib/               Third-party libraries (git submodules, plus metal-cpp)
-src/main.cpp       App entry point and render loop
+src/main.cpp       App entry point, window handling and ImGui UI (including the Metal/Vulkan switch)
+src/renderer.h     Minimal backend interface (first sketch of the RHI)
+src/metal_renderer.cpp   Metal backend, shaders in MSL
+src/vulkan_renderer.cpp  Vulkan backend (via MoltenVK), shaders in GLSL -> SPIR-V
+src/shaders/       triangle.metal, triangle.vert, triangle.frag
 src/metal_impl.cpp metal-cpp implementation (must exist in exactly one source file)
 src/smoke_tests.*  Headless library checks
 plan.md            Learning roadmap with checkboxes
