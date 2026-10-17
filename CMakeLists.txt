@@ -4,6 +4,17 @@ cmake_minimum_required(VERSION 3.10)
 project(GraphicsRendererDemos LANGUAGES C CXX OBJC OBJCXX)
 
 
+# Build type for single-config generators (Makefiles, Ninja): -DCMAKE_BUILD_TYPE=Debug|Release, defaults to Debug.
+# Multi-config generators (Xcode, Visual Studio) pick it at build time: cmake --build <dir> --config Release
+get_property(IS_MULTI_CONFIG GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
+if(NOT IS_MULTI_CONFIG)
+    if(NOT CMAKE_BUILD_TYPE)
+        set(CMAKE_BUILD_TYPE Debug CACHE STRING "Build type" FORCE)
+    endif()
+    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS Debug Release RelWithDebInfo MinSizeRel)
+    message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
+endif()
+
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -191,3 +202,68 @@ target_link_libraries(GraphicsRendererDemos PRIVATE
     assimp::assimp
     Jolt
 )
+
+# Convenience targets. Build with: cmake --build <dir> --target <name>
+#   run          build + launch the demo (from the source dir)
+#   open-xcode   generate (if needed) and open the Xcode project   (macOS)
+#   open-vscode  open the folder in VS Code
+#   open-vs      generate (if needed) and open the Visual Studio solution (Windows)
+add_custom_target(run
+    COMMAND $<TARGET_FILE:GraphicsRendererDemos>
+    DEPENDS GraphicsRendererDemos
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    USES_TERMINAL
+    COMMENT "Running GraphicsRendererDemos")
+
+if(APPLE)
+    set(XCODE_BUILD_DIR ${CMAKE_SOURCE_DIR}/build-xcode)
+    if(CMAKE_GENERATOR STREQUAL "Xcode")
+        set(XCODE_BUILD_DIR ${CMAKE_BINARY_DIR})
+        set(XCODE_GENERATE_CMD ${CMAKE_COMMAND} -E echo "Xcode project already generated")
+    else()
+        set(XCODE_GENERATE_CMD ${CMAKE_COMMAND} -S ${CMAKE_SOURCE_DIR} -B ${XCODE_BUILD_DIR} -G Xcode)
+    endif()
+    add_custom_target(open-xcode
+        COMMAND ${XCODE_GENERATE_CMD}
+        COMMAND open ${XCODE_BUILD_DIR}/${PROJECT_NAME}.xcodeproj
+        USES_TERMINAL
+        COMMENT "Opening Xcode project")
+endif()
+
+find_program(CODE_EXECUTABLE code)
+if(CODE_EXECUTABLE)
+    add_custom_target(open-vscode
+        COMMAND ${CODE_EXECUTABLE} ${CMAKE_SOURCE_DIR}
+        COMMENT "Opening VS Code")
+elseif(APPLE)
+    add_custom_target(open-vscode
+        COMMAND open -a "Visual Studio Code" ${CMAKE_SOURCE_DIR}
+        COMMENT "Opening VS Code")
+endif()
+
+if(WIN32)
+    set(VS_BUILD_DIR ${CMAKE_SOURCE_DIR}/build-vs)
+    if(CMAKE_GENERATOR MATCHES "Visual Studio")
+        set(VS_BUILD_DIR ${CMAKE_BINARY_DIR})
+        set(VS_GENERATE_CMD ${CMAKE_COMMAND} -E echo "Visual Studio solution already generated")
+    else()
+        set(VS_GENERATE_CMD ${CMAKE_COMMAND} -S ${CMAKE_SOURCE_DIR} -B ${VS_BUILD_DIR} -G "Visual Studio 17 2022")
+    endif()
+    add_custom_target(open-vs
+        COMMAND ${VS_GENERATE_CMD}
+        COMMAND ${CMAKE_COMMAND} -E env cmd /c start "" ${VS_BUILD_DIR}/${PROJECT_NAME}.sln
+        USES_TERMINAL
+        COMMENT "Opening Visual Studio solution")
+endif()
+
+# Xcode scheme settings. Only used when configured with the Xcode generator (cmake --preset xcode), ignored otherwise.
+if(CMAKE_GENERATOR STREQUAL "Xcode")
+    set_target_properties(GraphicsRendererDemos PROPERTIES
+        XCODE_GENERATE_SCHEME ON
+        # Metal debugger: adds the GPU frame capture button to Xcode's debug bar
+        XCODE_SCHEME_ENABLE_GPU_FRAME_CAPTURE_MODE "Metal"
+        # Same as MTL_DEBUG_LAYER=1 and MTL_SHADER_VALIDATION=1
+        XCODE_SCHEME_ENABLE_GPU_API_VALIDATION ON
+        XCODE_SCHEME_ENABLE_GPU_SHADER_VALIDATION ON
+        XCODE_SCHEME_WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+endif()

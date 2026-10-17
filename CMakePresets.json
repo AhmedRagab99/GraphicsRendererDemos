@@ -1,0 +1,40 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": { "major": 3, "minor": 21, "patch": 0 },
+  "configurePresets": [
+    {
+      "name": "debug",
+      "displayName": "Debug (default generator)",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" }
+    },
+    {
+      "name": "release",
+      "displayName": "Release (default generator)",
+      "binaryDir": "${sourceDir}/build-release",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
+    },
+    {
+      "name": "xcode",
+      "displayName": "Xcode project (macOS only)",
+      "generator": "Xcode",
+      "binaryDir": "${sourceDir}/build-xcode",
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Darwin" }
+    },
+    {
+      "name": "vs",
+      "displayName": "Visual Studio solution (Windows only)",
+      "generator": "Visual Studio 17 2022",
+      "binaryDir": "${sourceDir}/build-vs",
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Windows" }
+    }
+  ],
+  "buildPresets": [
+    { "name": "debug", "configurePreset": "debug" },
+    { "name": "release", "configurePreset": "release" },
+    { "name": "xcode", "configurePreset": "xcode", "configuration": "Debug" },
+    { "name": "xcode-release", "configurePreset": "xcode", "configuration": "Release" },
+    { "name": "vs", "configurePreset": "vs", "configuration": "Debug" },
+    { "name": "vs-release", "configurePreset": "vs", "configuration": "Release" }
+  ]
+}

@@ -1,4 +1,9 @@
 {
+  // C++ highlighting: colours come from clangd (semantic tokens). Your theme ("Visual Studio Dark")
+  // doesn't enable semantic highlighting by itself, so turn it on for this project.
+  "editor.semanticHighlighting.enabled": true,
+  "clangd.arguments": ["--compile-commands-dir=${workspaceFolder}/build", "--background-index"],
+
   "files.associations": {
     "*.vert": "glsl",
     "*.frag": "glsl",

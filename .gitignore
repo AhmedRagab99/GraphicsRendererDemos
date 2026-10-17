@@ -34,3 +34,4 @@ xcuserdata/
 
 # ImGui runtime state
 imgui.ini
+build-xcode/
