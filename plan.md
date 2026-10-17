@@ -4,7 +4,7 @@ The goal is to go from "clear the screen" to the techniques used in modern game 
 then port to Vulkan behind an RHI (render hardware interface), so the renderer code doesn't care which API is
 underneath.
 
-**How to use this file:** tick a box (`[x]`) when the item is done *and* I can explain it without looking. Each
+**How to use this file:** tick a box (`[x]`) when the item is done _and_ I can explain it without looking. Each
 phase ends with a demo and a "can I explain it?" check. Don't skip the checks, because they are the actual learning.
 
 **Rule of thumb:** write each new technique as a self-contained demo first. Only move it into the framework once
@@ -38,16 +38,18 @@ I understand it.
 Get the toolchain and math solid before touching the GPU.
 
 **Setup**
+
 - [x] Repository with CMake build
 - [x] Third-party libraries as submodules (SDL3, glm, ImGui, Vulkan-Headers, Assimp, Jolt, miniaudio)
 - [x] metal-cpp integrated
 - [x] Smoke test for every library
-- [x] Window, Metal layer and ImGui render loop
+- [ ] Window, Metal layer and ImGui render loop
 - [ ] Add a `.clang-format` and pick a naming convention
 - [ ] Add validation layers / Metal API validation switch (`MTL_DEBUG_LAYER=1`, `MTL_SHADER_VALIDATION=1`)
 - [ ] Learn Xcode's GPU frame capture (Metal debugger) on this app
 
 **Math refresher** (needed for everything after)
+
 - [ ] Vectors: dot, cross, normalize, projection, reflection, refraction
 - [ ] Matrices: translation, rotation, scale, composition order, column-major vs row-major
 - [ ] Coordinate systems: left/right-handed, Metal clip space (z in [0,1]) vs OpenGL ([-1,1]) vs Vulkan (y down)
@@ -196,6 +198,7 @@ How a frame is organised. This is where a renderer starts to turn into an engine
 Revisit everything with the Metal 4 API model. Check the current Apple docs and WWDC sessions for exact details.
 
 **Core model changes**
+
 - [ ] Why Metal 4 exists: lower CPU overhead, explicit memory, unified encoders
 - [ ] `MTL4CommandQueue` and `MTL4CommandBuffer`, with command buffers reusable and decoupled from the queue
 - [ ] `MTL4CommandAllocator`: ownership and reset
@@ -212,17 +215,20 @@ Revisit everything with the Metal 4 API model. Check the current Apple docs and 
 - [ ] Port **Demo 01 to 05** to the Metal 4 model
 
 **Metal 4 + machine learning**
+
 - [ ] `MTLTensor` and the ML command encoder
 - [ ] Running an ML network inside the frame
 - [ ] Shader ML (calling inference from inside shaders)
 - [ ] **Demo:** small neural network applied to a texture (e.g. denoise or style filter)
 
 **Metal 4 + MetalFX**
+
 - [ ] MetalFX spatial and temporal upscaling
 - [ ] MetalFX frame interpolation
 - [ ] MetalFX denoised upscaling for ray tracing
 
 **Tooling**
+
 - [ ] Metal debugger, shader debugger, GPU counters, Metal System Trace
 - [ ] Shader validation and API validation, with fixes for any warnings
 
@@ -349,9 +355,10 @@ Everything around the renderer. This is where Assimp, Jolt and miniaudio come in
 
 ## Phase 14: The RHI
 
-Design the abstraction after knowing Metal 4 well, and *before* writing Vulkan, so the second backend proves the design.
+Design the abstraction after knowing Metal 4 well, and _before_ writing Vulkan, so the second backend proves the design.
 
 **Design**
+
 - [ ] Write down the lowest common denominator of Metal 4 and Vulkan 1.3 (and what to expose beyond it)
 - [ ] Pick an object model: device, queue, command list, buffer, texture, sampler, pipeline, descriptor / argument binding
 - [ ] Handle-based resources (generational indices) instead of raw pointers
@@ -362,12 +369,14 @@ Design the abstraction after knowing Metal 4 well, and *before* writing Vulkan, 
 - [ ] Decide how errors and validation messages are reported
 
 **Shaders**
+
 - [ ] Choose a shader strategy: write Slang or HLSL and compile to MSL and SPIR-V, or maintain both MSL and GLSL
 - [ ] Integrate the compiler (Slang, DXC + SPIRV-Cross, or glslang) into CMake
 - [ ] Shader reflection to build binding layouts automatically
 - [ ] Shared header for CPU/GPU struct layouts
 
 **Implementation**
+
 - [ ] `rhi/` interface headers with no backend types leaking
 - [ ] Metal 4 backend implementing the RHI
 - [ ] Port the renderer (Phases 1 to 6) onto the RHI, running on Metal
@@ -384,6 +393,7 @@ Design the abstraction after knowing Metal 4 well, and *before* writing Vulkan, 
 Learn Vulkan directly, then plug it in behind the RHI. On macOS this goes through MoltenVK, so note any missing features.
 
 **Setup**
+
 - [ ] Install the Vulkan SDK / MoltenVK; configure `find_package(Vulkan)` or load via volk
 - [ ] Instance, validation layers, debug messenger
 - [ ] Physical device selection and queue families
@@ -393,6 +403,7 @@ Learn Vulkan directly, then plug it in behind the RHI. On macOS this goes throug
 - [ ] **Demo V01:** hello triangle in Vulkan
 
 **Core concepts**
+
 - [ ] Command pools and command buffers; recording and submission
 - [ ] Synchronisation: fences, semaphores, pipeline barriers, **synchronization2**, timeline semaphores
 - [ ] Frames in flight
@@ -407,6 +418,7 @@ Learn Vulkan directly, then plug it in behind the RHI. On macOS this goes throug
 - [ ] Mesh shaders, ray tracing extensions (`VK_KHR_ray_tracing_pipeline`, `VK_KHR_acceleration_structure`), dynamic rendering local read
 
 **Backend**
+
 - [ ] Vulkan backend implementing the RHI
 - [ ] Run **every** earlier demo on the Vulkan backend with no renderer code changes
 - [ ] Compare Metal and Vulkan: frame time, CPU overhead, code size, pain points; write the findings in `notes/`
@@ -433,25 +445,29 @@ Pull it all together into one demo that shows the engine off.
 ## Reference material
 
 **Books**
-- *Real-Time Rendering*, 4th edition (Akenine-Möller, Haines, Hoffman)
-- *Physically Based Rendering: From Theory to Implementation* (pbr-book.org, free online)
-- *Game Engine Architecture* (Jason Gregory)
-- *GPU Gems* series and *GPU Zen* (free online for some)
-- *Ray Tracing Gems* (free online)
+
+- _Real-Time Rendering_, 4th edition (Akenine-Möller, Haines, Hoffman)
+- _Physically Based Rendering: From Theory to Implementation_ (pbr-book.org, free online)
+- _Game Engine Architecture_ (Jason Gregory)
+- _GPU Gems_ series and _GPU Zen_ (free online for some)
+- _Ray Tracing Gems_ (free online)
 
 **Metal and Apple**
-- Apple developer documentation for Metal, and the *Metal Shading Language Specification* (PDF)
+
+- Apple developer documentation for Metal, and the _Metal Shading Language Specification_ (PDF)
 - WWDC sessions on Metal 4, MetalFX, ray tracing and GPU-driven rendering
 - Apple sample code: "Modern Rendering with Metal", "Deferred Lighting", "GPU-driven rendering"
 - metal-cpp readme and headers in `lib/Metal-cpp`
 
 **Vulkan**
+
 - [Vulkan Tutorial](https://vulkan-tutorial.com) and [vkguide.dev](https://vkguide.dev)
 - The Vulkan specification and Khronos Vulkan samples
 - Sascha Willems' Vulkan examples
 - MoltenVK documentation (feature gaps on macOS)
 
 **Techniques**
+
 - Learn OpenGL (learnopengl.com) for PBR, IBL, SSAO and shadow theory (the ideas map straight to Metal)
 - Filament design document (PBR and real-time lighting reasoning)
 - Unreal Engine 5 papers: Nanite, Lumen (SIGGRAPH advances talks)
@@ -460,6 +476,7 @@ Pull it all together into one demo that shows the engine off.
 - Jendrik Illner's "Graphics Programming Weekly"
 
 **Tools**
+
 - Xcode Metal debugger and GPU frame capture
 - RenderDoc (for the Vulkan side)
 - Tracy profiler for CPU
@@ -471,6 +488,6 @@ Pull it all together into one demo that shows the engine off.
 
 Add a line when a phase or major demo is finished: date, what I built, what surprised me.
 
-| Date | Milestone | Notes |
-|---|---|---|
-| 2026-10-12 | Project set up, all libraries linked, ImGui render loop on Metal | |
+| Date       | Milestone                                                        | Notes |
+| ---------- | ---------------------------------------------------------------- | ----- |
+| 2026-10-12 | Project set up, all libraries linked, ImGui render loop on Metal |       |

@@ -1,0 +1,26 @@
+{
+  // C++ highlighting: colours come from clangd (semantic tokens). Your theme ("Visual Studio Dark")
+  // doesn't enable semantic highlighting by itself, so turn it on for this project.
+  "editor.semanticHighlighting.enabled": true,
+  "clangd.arguments": ["--compile-commands-dir=${workspaceFolder}/build", "--background-index"],
+
+  "files.associations": {
+    "*.vert": "glsl",
+    "*.frag": "glsl",
+    "*.comp": "glsl",
+    "*.glsl": "glsl"
+  },
+
+  // GLSL: error checking with glslangValidator (from the Vulkan SDK)
+  "glsllint.glslangValidatorPath": "/usr/local/bin/glslangValidator",
+  "glsllint.additionalStageAssociations": {
+    ".fs": "frag",
+    ".vs": "vert"
+  },
+  // Metal: clangd-based language server, plus real compiler errors (xcrun metal) when saving
+  "metal-lsp.metalStdVersion": "metal4.0",
+  "metal-lsp.compileDiagnostics": "onSave",
+
+  // Slang: the "slang" extension starts slangd; look for imports in the shader folder
+  "slang.additionalSearchPaths": ["${workspaceFolder}/src/shaders"]
+}

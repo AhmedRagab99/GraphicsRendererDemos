@@ -1,0 +1,12 @@
+{
+  "recommendations": [
+    // GLSL
+    "slevesque.shader",
+    "dtoplak.vscode-glsllint",
+    // Metal
+    "JakubJirak.metal-language-support",
+    "rayanhtt.metal-lsp",
+    // Slang
+    "shader-slang.slang-language-extension"
+  ]
+}
